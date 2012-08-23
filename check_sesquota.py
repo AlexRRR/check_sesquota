@@ -31,19 +31,16 @@ if (options.aws_key and  options.aws_secret):
      conn = connect_ses(aws_access_key_id=options.aws_key,
                         aws_secret_access_key=options.aws_secret)
 else:
-    try:
-        conn = connect_ses()
-    except boto.exception.BotoServerError:
-        print("Could not connect to server")
+     conn = connect_ses()
 
 if not conn:
-    print("Could not connect to SES, please check credentials!")
+    print("CRITICAL: Could not connect to SES, please check credentials!")
     sys.exit(2)
 
 try:
     quota = conn.get_send_quota()
 except BotoServerError:
-    print("Could not connect to server")
+    print("CRITICAL: Could not connect to server")
     sys.exit(2)
 
 max24h_send = float(quota['GetSendQuotaResponse']['GetSendQuotaResult']['Max24HourSend'])
@@ -59,4 +56,3 @@ if (used_percentage > float(options.warning_threshold)):
 
 print("SES QUOTA OK: %0.2f%% (%0.2f sent out of %0.2f)" % (used_percentage,sent_last24h,max24h_send))
 sys.exit(0)
-
