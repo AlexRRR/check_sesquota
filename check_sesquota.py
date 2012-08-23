@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''Nagios plugin for monitoring Amazon SES quota usage'''
 from boto import connect_ses
 from boto.exception import *
