@@ -1,5 +1,6 @@
 '''Nagios plugin for monitoring Amazon SES quota usage'''
 from boto import connect_ses
+from boto.exception import *
 import optparse
 import sys
 import pdb
@@ -17,17 +18,30 @@ options = [
                         dest="aws_secret", help="AWS secret key"),
         ]
 
+
+
 (options, args) = parser.parse_args()
 
+if not (options.critical_threshold and options.warning_threshold):
+    print("Critical and warning thresholds are req")
+    sys.exit(2)
+
+
 if (options.aws_key and  options.aws_secret):
-    print("Connecting with new credentials")
-    conn = connect_ses(aws_access_key_id=options.aws_key,
+    try:
+        conn = connect_ses(aws_access_key_id=options.aws_key,
                         aws_secret_access_key=options.aws_secret)
+    except boto.exception.BotoServerError:
+        print("Could not connect to server")
+        sys.exit(2)
 else:
-    conn = connect_ses()
+    try:
+        conn = connect_ses()
+    except boto.exception.BotoServerError:
+        print("Could not connect to server")
 
 if not conn:
-    print("Could not connecto SES, check credentials!")
+    print("Could not connect to SES, please check credentials!")
     sys.exit(2)
 
 
