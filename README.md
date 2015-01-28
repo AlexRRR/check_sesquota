@@ -8,6 +8,9 @@ AWS credentials may be passed as parameters or be installed in ~/.boto file or ~
 for more info.
 
 ## Usage
-``` python check_sesquota.py -c 10 -w 20  -r eu-west-1````
+``` python check_sesquota.py -c 10 -w 20  -r eu-west-1```
+
+-c critical percentage of quota available
+-w warning percentage of quota available
 
 *note* us-east1 is the default region.
