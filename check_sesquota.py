@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 '''Nagios plugin for monitoring Amazon SES quota usage'''
-from boto import connect_ses
+
+from boto import ses
 from boto.exception import *
 import optparse
 import sys
@@ -17,6 +18,8 @@ options = [
                         dest="aws_key", help="AWS Key"),
         parser.add_option('-s', '--aws-secret', action="store",
                         dest="aws_secret", help="AWS secret key"),
+        parser.add_option('-r', '--region', action="store",
+                        dest="region", help="AWS secret key", default="us-east-1"),
         ]
 
 
@@ -27,12 +30,13 @@ if not (options.critical_threshold and options.warning_threshold):
     print("Critical and warning thresholds are req")
     sys.exit(2)
 
-
 if (options.aws_key and  options.aws_secret):
-     conn = connect_ses(aws_access_key_id=options.aws_key,
+     conn = ses.connect_to_region(
+                        options.region,
+                        aws_access_key_id=options.aws_key,
                         aws_secret_access_key=options.aws_secret)
 else:
-     conn = connect_ses()
+     conn = ses.connect_to_region(options.region)
 
 if not conn:
     print("CRITICAL: Could not connect to SES, please check credentials!")
